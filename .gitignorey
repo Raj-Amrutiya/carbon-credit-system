@@ -1,0 +1,6 @@
+.idea/
+backend/carbon-api/target/
+node_modules/
+.env
+*.class
+
