@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: carbon-credit-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - backend-static:/app/staticfiles
+    environment:
+      - DEBUG=1
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - DATABASE_URL=sqlite:///db.sqlite3
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: carbon-credit-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - carbon-network
+    restart: unless-stopped
+
+  # Uncomment if you want to use PostgreSQL instead of SQLite
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: carbon-credit-db
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_DB=carbon_credit_db
+  #     - POSTGRES_USER=carbon_user
+  #     - POSTGRES_PASSWORD=carbon_pass
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - carbon-network
+  #   restart: unless-stopped
+
+volumes:
+  backend-static:
+  # postgres-data:
+
+networks:
+  carbon-network:
+    driver: bridge

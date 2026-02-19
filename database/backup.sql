@@ -1,1 +1,0 @@
--- Placeholder for backups. Generate with: mysqldump -u root -p carbon_db > backup.sql
